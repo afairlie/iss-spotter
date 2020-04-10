@@ -24,4 +24,28 @@ const fetchMyIP = (callback) => {
   });
 };
 
-module.exports = { fetchMyIP };
+const fetchCoordsByIP = (IP, callback) => {
+  request(`https://ipvigilante.com/${IP}`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    } else if (response.statusCode !== 200) {
+      const msg = `Status Code ${response.statusCode} when fetching coordinates. Response: ${body}`;
+      callback(Error(msg), null);
+      return;
+    } else {
+      const { latitude, longitude } = JSON.parse(body).data;
+      callback(null, {latitude, longitude});
+    }
+  });
+};
+
+const fetchISSFlyOverTimes = (coordinates, callback) => {
+  request(`http://api.open-notify.org/iss-pass.json?lat=LAT&lon=LON`, (err, response, body)=> {
+    console.log(body);
+  })
+}
+
+fetchISSFlyOverTimes()
+
+module.exports = { fetchMyIP, fetchCoordsByIP };
